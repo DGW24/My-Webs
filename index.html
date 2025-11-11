@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Digi World | Portal Hub</title>
+<link rel="icon" type="image/png" href="dgl.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* 🎨 DEFAULT = LIGHT THEME (Activated when body.dark is absent) */
+:root {
+  --bg-1: #f6f9ff;
+  --bg-2: #eff6ff;
+  --glass: rgba(255,255,255,0.7);
+  --muted: #475569;
+  --text: #0f172a;
+  --accent1: #6366f1;
+  --accent2: #0ea5e9;
+  --accent3: #10b981;
+  --card-bg: rgba(255,255,255,0.9);
+  --shadow: 0 6px 20px rgba(2,6,23,0.06);
+  /* --- New/Fixed Variables for Consistency --- */
+  --border-color: rgba(15,23,42,0.1);
+  --input-bg: rgba(0,0,0,0.05);
+  --card-gradient: rgba(255,255,255,1); /* Solid white for light cards */
+  --hero-gradient: rgba(255,255,255,1); /* Solid white for light hero */
+  --chat-msg-bg: #e2e8f0; /* Light chat message background */
+}
+
+/* 🌙 DARK THEME VARIANTS (Activated by body.dark) */
+body.dark {
+  --bg-1: #0f172a;
+  --bg-2: #0b1220;
+  --glass: rgba(255,255,255,0.06);
+  --muted: #cbd5e1;
+  --text: #f8fafc;
+  --accent1: #6366f1;
+  --accent2: #0ea5e9;
+  --accent3: #10b981;
+  --card-bg: rgba(255,255,255,0.04);
+  --shadow: 0 8px 30px rgba(0,0,0,0.35);
+  /* --- New/Fixed Variables for Consistency --- */
+  --border-color: rgba(255,255,255,0.03);
+  --input-bg: rgba(255,255,255,0.08);
+  --card-gradient: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(16,185,129,0.04));
+  --hero-gradient: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(99,102,241,0.08));
+  --chat-msg-bg: rgba(255,255,255,0.1);
+}
+
+/* 🔧 BASIC RESET */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+}
+html, body {
+  height: 100%;
+  background: radial-gradient(circle at 10% 10%, var(--bg-2), var(--bg-1));
+  color: var(--text);
+  transition: background 0.5s ease, color 0.5s ease, filter 0.5s ease;
+}
+
+/* NAVBAR (Fixed to use theme variables) */
+.navbar{
+  position:sticky;top:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:10px 18px;
+  background:var(--card-bg); /* FIXED: Use card-bg for theme switching */
+  backdrop-filter: blur(8px);
+  border-bottom:1px solid var(--border-color); /* FIXED: Use border-color variable */
+}
+.nav-left{display:flex;align-items:center;gap:12px}
+.brand-logo{width:46px;height:46px;border-radius:10px;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,0.3)}
+.brand-title{font-size:18px;font-weight:700;background:linear-gradient(90deg,var(--accent1),var(--accent3));-webkit-background-clip:text;color:transparent}
+.nav-actions{display:flex;align-items:center;gap:10px}
+
+/* LINKS */
+.nav-links{display:flex;gap:14px;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-weight:600}
+.nav-links a:hover{color:var(--text);text-shadow:0 0 8px rgba(0,0,0,0.2)}
+
+/* SEARCH & TOGGLES */
+.search-wrap{display:flex;align-items:center;gap:8px;background:var(--card-bg);padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.04)}
+.search-wrap input{background:transparent;border:none;outline:none;color:var(--text);min-width:180px;padding:6px}
+.icon-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;padding:8px;border-radius:8px}
+.icon-btn:hover{background:rgba(255,255,255,0.03);color:var(--text)}
+
+
+/* LAYOUT */
+.container{display:flex;height:calc(100vh - 64px);overflow:hidden}
+.sidebar{
+  width:260px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  background:var(--glass);backdrop-filter:blur(12px);border-right:1px solid rgba(255,255,255,0.04);box-shadow:var(--shadow);
+  transition:transform .35s cubic-bezier(.2,.9,.3,1),width .25s; overflow-y: auto;
+  max-height: calc(100vh - 40px); /* full height minus top margin */
+  scrollbar-width: thin;scroll-behavior: smooth;
+  scrollbar-color:var(--accent2) transparent;
+}
+.sidebar.hide{transform:translateX(-110%);}
+.sidebar h3{font-size:18px;margin-top:4px;margin-bottom:8px;background:linear-gradient(90deg,var(--accent2),var(--accent1));-webkit-background-clip:text;color:transparent}
+.side-btn{width:100%;text-align:left;padding:10px 12px;border-radius:10px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-weight:600;display:flex;align-items:center;gap:10px}
+.side-btn:hover{background:rgba(115, 255, 243, 0.612);color:var(--text);transform:translateX(6px); behavior: smooth;}
+.side-btn.active{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;box-shadow:0 6px 4px rgba(13, 255, 0, 0);}
+
+/* MAIN */
+.main{flex:1;padding:22px;overflow:auto}
+.top-panel{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px}
+.section-title{font-size:20px;font-weight:700;background:linear-gradient(90deg,var(--accent3),var(--accent2));-webkit-background-clip:text;color:transparent}
+
+/* HOME BANNER */
+.banner{
+  background:linear-gradient(135deg, rgba(14,165,233,0.06), rgba(99,102,241,0.06));
+  border:1px solid rgba(255,255,255,0.04);padding:28px;border-radius:14px;margin-bottom:18px;display:flex;gap:18px;align-items:center;
+  box-shadow:0 8px 30px rgba(0,0,0,0.25)
+}
+.banner .left{flex:1}
+.banner h2{font-size:24px;margin-bottom:6px}
+.banner p{color:var(--muted)}
+
+/* SECTION BOX */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;margin-top:12px}
+.portal-card{
+  background:var(--card-gradient); /* FIXED: Use theme variable */
+  border-radius:12px;padding:18px;text-align:center;border:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:transform .25s,box-shadow .25s
+}
+.portal-card:hover{transform:translateY(-8px);box-shadow:0 10px 30px rgb(224, 246, 59)}
+.portal-card img{width:auto;height:56px;border-radius:20%;padding:6px;background:rgb(255, 255, 255);margin-bottom:10px}
+.portal-card a{display:block;color:var(--text);font-weight:700;text-decoration:none}
+
+/* ABOUT & CONTACT */
+.about-box, .contact-box{background:var(--card-bg);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
+
+/* 💬 CHAT BOX */
+.chat-toggle{position:fixed;bottom:25px;right:25px;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff;font-size:22px;border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.3);transition:.3s;z-index:999}
+.chat-toggle:hover{transform:scale(1.1)}
+.chat-box{position:fixed;bottom:90px;right:25px;width:300px;max-height:400px;display:none;flex-direction:column;justify-content:space-between;background:var(--glass);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;animation:slideUp .4s ease;z-index:999}
+.chat-header{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;padding:10px 15px;display:flex;align-items:center;justify-content:space-between;font-weight:600}
+.icon-btn{background:transparent;border:none;color:#fff;font-size:18px;cursor:pointer}
+.chat-messages{flex:1;padding:10px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+.chat-input{display:flex;gap:6px;padding:10px;border-top:1px solid rgba(255,255,255,.1)}
+.chat-input textarea{
+  flex:1;padding:8px;border-radius:10px;border:none;resize:none;
+  background:var(--input-bg); /* FIXED: Use theme variable */
+  color:var(--text);font-size:14px;outline:none
+}
+.chat-input button{background:linear-gradient(90deg,var(--accent1),var(--accent2));border:none;color:#fff;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600;transition:.3s}
+.chat-input button:hover{transform:scale(1.05)}
+.bot-msg,.user-msg{max-width:80%;padding:8px 12px;border-radius:12px;font-size:14px;line-height:1.4;animation:fadeIn .3s ease}
+.bot-msg{
+  background:var(--chat-msg-bg); /* FIXED: Use theme variable */
+  color:var(--text);align-self:flex-start
+}
+.user-msg{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;align-self:flex-end}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* Hide all sections by default */
+.main section {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+
+/* Only show active section */
+.main section.active {
+  display: block;
+}
+
+/* Simple fade animation */
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(10px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+/* Home Hero Section (Fixed to use theme variable) */
+.hero {
+  display: flex;flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 40px;
+  background: var(--hero-gradient); /* FIXED: Use theme variable */
+  border-radius: 20px;  padding: 40px 30px;  margin-bottom: 30px;box-shadow: 0 10px 30px rgba(0,0,0,0.2);position: relative;overflow: hidden;
+}
+.hero-left {flex: 1;min-width: 280px;}
+.hero-left h1 { font-size: 2rem; font-weight: 700; color: var(--text);}
+.hero-left h1 span {
+  background: linear-gradient(90deg, var(--accent1), var(--accent3));
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.hero-left p {
+  color: var(--muted);
+  margin-top: 10px;
+  line-height: 1.6;
+}
+.hero-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+}
+.btn-primary {
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 20px rgba(99,102,241,0.4);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--muted);
+  border: 2px solid rgba(255,255,255,0.2);
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-outline:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.1);
+}
+
+/* Hero Right */
+.hero-right {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-right img {
+  width: 150px;
+  border-radius: 20px;
+  position: relative;
+  z-index: 2;
+  animation: float 3s ease-in-out infinite;
+}
+.glow-circle {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--accent1), transparent 70%);
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: 0.4;
+  animation: pulse 4s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+
+/* Features under Hero */
+.home-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+.feature-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 16px;
+  text-align: center;
+  padding: 20px;
+  transition: all 0.3s;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(99,102,241,0.2);
+  background-color: #00ff15;
+}
+.feature-card img{width:60px;margin-bottom:10px;filter:drop-shadow(0 2px 10px #ffffff);}
+
+.feature-card h3 {
+  font-size: 18px;
+  margin-bottom: 6px;
+  color: var(--accent1);
+ 
+}
+.feature-card p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 📬 CONTACT SECTION */
+#contactSection {
+  display: none;
+  padding: 60px 20px;
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+  animation: fadeIn 0.6s ease;
+}
+#contactSection.active {
+  display: block;
+}
+
+.contact-wrapper {
+  background: var(--glass);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  padding: 40px 30px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.contact-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg,var(--accent1),var(--accent2));
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.contact-subtitle {
+  color: var(--muted);
+  font-size: 15px;
+  margin-bottom: 30px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background: var(--input-bg); /* FIXED: Use theme variable */
+  color: var(--text);
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--accent2);
+  box-shadow: 0 0 10px rgba(99,102,241,0.4);
+}
+
+.send-btn {
+  padding: 12px 22px;
+  background: linear-gradient(90deg,var(--accent1),var(--accent2));
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.send-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(99,102,241,0.4);
+}
+
+/* Social icons */
+.contact-social {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+.contact-social img {
+  width: 36px;
+  height: 36px;
+  opacity: 0.8;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.contact-social img:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#aboutSection{display:none;padding:60px 20px;max-width:850px;margin:auto;text-align:center;animation:fadeIn .6s ease}
+#aboutSection.active{display:block}
+.about-wrapper{background:var(--glass);border-radius:20px;padding:40px 30px;backdrop-filter:blur(16px);box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.1)}
+.about-title{font-size:28px;font-weight:700;background:linear-gradient(90deg,var(--accent1),var(--accent2));-webkit-background-clip:text;color:transparent;margin-bottom:15px}
+.about-desc{color:var(--text);font-size:16px;margin-bottom:20px;line-height:1.6}.about-features{list-style:none;text-align:left;color:var(--muted);font-size:15px;line-height:1.8;max-width:600px;margin:0 auto 20px auto;padding-left:0}
+.about-divider{height:1px;width:80%;margin:20px auto;background:linear-gradient(90deg,transparent,var(--accent2),transparent)}.owner-info{margin-top:20px;text-align:left;max-width:500px;margin-inline:auto;color:var(--muted);font-size:15px;line-height:1.6}.owner-info h3{color:var(--accent2);margin-bottom:8px;text-align:center}.owner-info a{color:var(--accent1);text-decoration:none}.owner-info a:hover{text-decoration:underline}
+
+/* MOBILE */
+.hamburger{display:none;border:none;background:transparent;color:var(--muted);cursor:pointer;padding:8px;border-radius:8px}
+@media (max-width:880px){
+  .sidebar{position:fixed;left:0;top:64px;bottom:0;height:calc(100vh - 64px);z-index:70}
+  .container{padding-top:0}
+  .hamburger{display:inline-block}
+  .nav-links{display:none}
+  .navbar{padding:8px 12px}
+  .chat-box{right:12px;bottom:90px;width:92%}
+}
+
+/* small tweaks */
+a{color:inherit}
+button:focus,input:focus,textarea:focus{outline:2px solid rgba(99,102,241,0.12);outline-offset:2px}
+</style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-left">
+      <button class="hamburger icon-btn" id="hambBtn" title="Menu" aria-label="Menu">☰</button>
+      <img src="dgl.png" alt="logo" class="brand-logo">
+      <div>
+        <div class="brand-title">Digi World</div>
+        <div style="font-size:12px;color:var(--muted)">Portal Hub</div>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <div class="search-wrap" title="Search">
+        <input id="globalSearch" placeholder="Search sites, e.g. 'youtube'..." aria-label="Search sites">
+        <button class="icon-btn" id="clearSearch" title="Clear search">✕</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="#" onclick="showSection('home')">Home</a>
+        <a href="#" onclick="showSection('about')">About</a>
+        <a href="#" onclick="showSection('contact')">Contact</a>
+      </div>
+
+      <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar" id="sidebar">
+      
+      <h3>Categories</h3>
+      <button class="side-btn active" onclick="selectCategory('social',this)">🌐 Social Media</button>
+      <button class="side-btn" onclick="selectCategory('shopping',this)">🛒 Shopping Sites</button>
+      <button class="side-btn" onclick="selectCategory('govt',this)">🏛 Govt Sites</button>
+      <button class="side-btn" onclick="selectCategory('tools',this)">⚙️ Tools</button>
+      <button class="side-btn" onclick="selectCategory('education',this)">🎓 Education</button>
+      <button class="side-btn" onclick="selectCategory('games',this)">🎮 Games</button>
+      <button class="side-btn" onclick="selectCategory('news',this)">📰 News</button>
+      
+
+      <hr style="width:100%;border:none;border-top:1px solid rgba(255,255,255,0.03);margin:10px 0">
+
+      <div style="margin-top:auto;font-size:12px;color:var(--muted)">© 2025 Digi World</div>
+    </div>
+
+    <div class="main" id="main">
+      <div class="top-panel">
+        <div class="section-title" id="pageTitle">Home</div>
+        <div style="color:var(--muted);font-size:13px" id="statusInfo">Ready</div>
+      </div>
+
+      <section id="homeSection" class="active">
+        <div class="hero">
+            <div class="hero-left">
+            <h1>🌐 Welcome to <span>Digi World</span></h1>
+            <p>All your favorite websites, tools & government portals — beautifully organized in one hub. Access anything instantly!</p>
+
+            <div class="hero-buttons">
+                <button onclick="selectCategory('social', document.querySelector('.side-btn'))" class="btn-primary">🚀 Explore Now</button>
+                <button onclick="showSection('about')" class="btn-outline">ℹ️ Learn More</button>
+            </div>
+            </div>
+
+            <div class="hero-right">
+            <img src="dgl.png" alt="Digi World Logo">
+            <div class="glow-circle"></div>
+            </div>
+        </div>
+
+        <div class="home-features">
+            <div class="feature-card">
+            <img src="sm.png">
+            <h3>Smart Categories</h3>
+            <p>Find sites by type — social, shopping, education, and more!</p>
+            </div>
+            <div class="feature-card">
+            <img src="dn.png">
+            <h3>Dark / Light Mode</h3>
+            <p>Comfortable viewing for day or night. Switch anytime.</p>
+            </div>
+            <div class="feature-card">
+            <img src="sr.png">
+            <h3>Live Search</h3>
+            <p>Search across all categories — find anything instantly.</p>
+            </div>
+        </div>
+        </section>
+
+      <section id="aboutSection">
+        <div class="about-wrapper">
+            <h2 class="about-title">💡 About Digi World</h2>
+            <p class="about-desc"><strong>Digi World</strong> is your smart digital hub — connecting all your favorite online services, tools, and government portals in one seamless experience.</p>
+
+            <ul class="about-features">
+            <li>⚡ One-click access to your favorite websites</li>
+            <li>🔍 Global search across all categories</li>
+            <li>🌙 Light/Dark mode with smooth animations</li>
+            <li>💬 Chat popup assistant for instant help</li>
+            <li>📱 Fully mobile responsive interface</li>
+            </ul>
+
+            <div class="about-divider"></div>
+
+            <div class="owner-info">
+            <h3>👤 Developer Info</h3>
+            <p><strong>Name:</strong> BHABATOSH BARMAN</p>
+            <p><strong>Location:</strong> Cooch Behar, West Bengal, India</p>
+            <p><strong>Contact:</strong> +91 90648 99089</p>
+            <p><strong>Email:</strong> <a href="mailto:bhabatoshdev@gmail.com">bhabatoshdev@gmail.com</a></p>
+            </div>
+        </div>
+        </section>
+
+      <section id="contactSection">
+        <div class="contact-wrapper">
+            <h2 class="contact-title">📬 Get in Touch</h2>
+            <p class="contact-subtitle">Have questions, feedback, or collaboration ideas? We'd love to hear from you!</p>
+
+            <form id="contactForm" onsubmit="event.preventDefault(); sendContact()">
+            <div class="form-group">
+                <input id="cname" type="text" placeholder="👤 Your Name" required>
+            </div>
+            <div class="form-group">
+                <input id="cemail" type="email" placeholder="📧 Your Email" required>
+            </div>
+            <div class="form-group">
+                <textarea id="cmsg" rows="5" placeholder="💬 Your Message" required></textarea>
+            </div>
+
+            <button class="send-btn">🚀 Send Message</button>
+            </form>
+
+            <div class="contact-social">
+            <a href="https://facebook.com" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook"></a>
+            <a href="https://instagram.com" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/1384/1384063.png" alt="Instagram"></a>
+            <a href="https://twitter.com" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968830.png" alt="Twitter"></a>
+            <a href="mailto:info@digiworld.com"><img src="https://cdn-icons-png.flaticon.com/512/646/646094.png" alt="Email"></a>
+            </div>
+        </div>
+        </section>
+
+
+      <section id="portalSection">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-weight:700" id="portalTitle">🌐 Social</div>
+          <div style="color:var(--muted);font-size:13px">Filtered results: <span id="resultCount">0</span></div>
+        </div>
+        <div class="card-grid" id="portalGrid"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="chat-toggle" id="chatToggle" title="Chat">💬</div>
+
+<div class="chat-box" id="chatBox">
+  <div class="chat-header">
+    <div class="chat-title">🤖 Digi Assistant</div>
+    <button class="icon-btn" id="closeChat">✕</button>
+  </div>
+
+  <div class="chat-messages" id="chatMessages">
+    <div class="bot-msg">👋 Hi! I'm your Digi Assistant.<br>How can I help you today?</div>
+  </div>
+
+  <div class="chat-input">
+    <textarea id="chatInput" rows="2" placeholder="Type your message..."></textarea>
+    <button id="chatSend">Send</button>
+  </div>
+</div>
+
+<script>
+/* ---------- Data ---------- */
+const data = {
+  social:[
+     { name: "Facebook", link: "https://facebook.com", icon: "https://cdn-icons-png.flaticon.com/512/733/733547.png" },
+    { name: "Instagram", link: "https://instagram.com", icon: "https://cdn-icons-png.flaticon.com/512/1384/1384063.png" },
+    { name: "YouTube", link: "https://youtube.com", icon: "https://cdn-icons-png.flaticon.com/512/1384/1384060.png" },
+    { name: "X (Twitter)", link: "https://twitter.com", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968830.png" },
+    { name: "LinkedIn", link: "https://linkedin.com", icon: "https://cdn-icons-png.flaticon.com/512/174/174857.png" },
+    { name: "Telegram", link: "https://web.telegram.org", icon: "https://cdn-icons-png.flaticon.com/512/2111/2111646.png" },
+    { name: "WhatsApp Web", link: "https://web.whatsapp.com", icon: "https://cdn-icons-png.flaticon.com/512/733/733585.png" }
+  ],
+
+  shopping:[
+    { name: "Amazon", link: "https://amazon.in", icon: "https://pngimg.com/uploads/amazon/amazon_PNG5.png" },
+    { name: "Flipkart", link: "https://flipkart.com", icon: "https://www.freepnglogos.com/uploads/flipkart-logo-png/flipkart-inventory-management-system-zap-inventory-1.png" },
+    { name: "Myntra", link: "https://myntra.com", icon: "https://logos-world.net/wp-content/uploads/2021/02/New-Myntra-Logo.png" },
+    { name: "Meesho", link: "https://meesho.com", icon: "https://upload.wikimedia.org/wikipedia/commons/3/33/Meesho_logo.png" },
+    { name: "Reliance Digital", link: "https://www.reliancedigital.in", icon: "https://play-lh.googleusercontent.com/qm84UmGsQf_EnaHo91uHKwg4eB58Sqwfw4GbqNrH24YKPh6b0M_3E1Q1IcSARq0-SA=w480-h960-rw" },
+    { name: "IndiaMART", link: "https://www.indiamart.com", icon: "https://companieslogo.com/img/orig/INDIAMART.NS-ecf147e0.png?t=1720244492.png" },
+    { name: "JioMart", link: "https://www.jiomart.com", icon: "https://www.thearcweb.com/_next/image?url=https%3A%2F%2Fstatic.thearcweb.com%2Fimages%2FPROD%2FPROD-a378a26d-2fa4-4146-a611-1748b4777002.png%3Fw%3D90%26q%3D100&w=1024&q=100" },
+    { name: "Moglix", link: "https://www.moglix.com", icon: "https://play-lh.googleusercontent.com/96Vv_XB-Z002pUw-bELgg9XLBkNyzHs9WCCAtCUsYW-uvSTQG4AvhBMmxkKeHgluCCI" },
+    { name: "Vplak", link: "https://www.vplak.com", icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo5mW2HMf-uv27fkw6HrsEHlhNr_CJW_XgCQ&s" },
+    { name: "OLX", link: "https://www.olx.in", icon: "https://upload.wikimedia.org/wikipedia/commons/2/28/OLX_Logo.jpg" }
+  ],
+
+  govt:[
+    { name: "Voter Portal", link: "https://voters.eci.gov.in", icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8rNLKCpTqPzODZgSjwt7mOy8hyUSmvjYXlA&s" },
+    { name: "Aadhaar", link: "https://myaadhaar.uidai.gov.in", icon: "https://upload.wikimedia.org/wikipedia/en/thumb/c/cf/Aadhaar_Logo.svg/1200px-Aadhaar_Logo.svg.png" },
+    { name: "Ration Card WB", link: "https://food.wb.gov.in", icon: "https://food.wb.gov.in/images/logo2.png" },
+    { name: "NSDL PAN", link: "https://onlineservices.proteantech.in/paam/endUserRegisterContact.html", icon: "https://zerodha.com/z-connect/wp-content/uploads/2024/05/nsdl-ltd-300x300.jpg" },
+    { name: "UTI PAN", link: "https://www.pan.utiitsl.com/newA.html", icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbov1rVe5AbVDkvCaOM6CcK-k9luTFvLJViA9CfgLu0L0hYZoDnywN4nkahappfQ-E1vE&usqp=CAU" },
+    { name: "Caste Certificate", link: "https://castcertificatewb.gov.in", icon: "https://image.pngaaa.com/111/5968111-middle.png" },
+    { name: "eShram", link: "https://register.eshram.gov.in", icon: "https://www.livehindustan.com/lh-img/uploadimage/library/2021/09/12/16_9/16_9_6/shram_1631418649.jpeg" },
+    { name: "Electricity WB", link: "https://www.wbsedcl.in/irj/go/km/docs/internet/new_website/Home.html", icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWW2CXB6y-H1uQHmy_F61-hc-4q7rtzzzsEw&s" },
+    { name: "Driving Licence", link: "https://sarathi.parivahan.gov.in", icon: "https://doittibbi.wordpress.com/wp-content/uploads/2020/10/sarathi.png?w=180" },
+    { name: "PM Kisan", link: "https://pmkisan.gov.in", icon: "https://play-lh.googleusercontent.com/Kp7j9PPH0R8CT1ZvakgxuiFXvzHYE9YXJTP0iae2ICbcqzjBRySYAlqFgtSufpVr3WM" },
+    { name: "Krishak Bandhu", link: "https://krishakbandhu.wb.gov.in", icon: "https://play-lh.googleusercontent.com/c1ziZXP_Zd81l8OIlY8jr7xQipOB3K0i7z3ibYe91BjMpM5gQKJIG9yDW2CiaP1K3D91=w600-h300-pc0xffffff-pd" },
+    { name: "GP Certificate", link: "https://wbpms.in/citizen", icon: "https://image.pngaaa.com/111/5968111-middle.png" },
+    { name: "eDistrict WB", link: "https://edistrict.wb.gov.in/portal/home", icon: "https://bsk.wb.gov.in/img/bsk-logo.png" },
+    { name: "Land Records WB", link: "https://banglarbhumi.gov.in", icon: "https://pbs.twimg.com/profile_images/1712522667344146432/hKtOornb_400x400.jpg" },
+    { name: "ABHA Health Card", link: "https://abha.abdm.gov.in/abha/v3/register", icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK3J_RF0cnC-7AAx2xUkXwxW9_SW-JS18XdA&s" },
+    { name: "Birth & Death", link: "https://janma-mrityutathya.wb.gov.in", icon: "https://janma-mrityutathya.wb.gov.in/assets/image/jm-logo.png" },
+    { name: "Job Card ", link: "https://nregastrep.nic.in/netnrega/homestciti.aspx?state_code=32&state_name=WEST%20BENGAL&lflag=eng&labels=labels", icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgHXa1YHBi9-AM2wN6PATna3d-612265lzvlprBZcIGV5onsoqE4VNEE7XB8CN5_slLs8&usqp=CAU" },
+    { name: "Provident Fund", link: "https://unifiedportal-mem.epfindia.gov.in", icon: "https://upload.wikimedia.org/wikipedia/en/5/54/EPFO_official_logo.gif" },
+    { name: "Awaas Yojana", link: "https://awaassoft.nic.in/netiay/Benificiary.aspx", icon: "https://awaassoft.nic.in/netiay/images/pmay-g-logo.png" },
+    { name: "Jai Bangla", link: "https://jaibangla.wb.gov.in/login", icon: "https://jaibangla.wb.gov.in/images/biswo.png" },
+    { name: "Lakshmir Bhandar", link: "https://socialsecurity.wb.gov.in/login", icon: "https://socialsecurity.wb.gov.in/images/biswo.webp" }
+  ],
+  
+  education:[
+    {name:"Google Classroom",link:"https://classroom.google.com",icon:"https://cdn-icons-png.flaticon.com/512/300/300221.png"},
+    {name:"Khan Academy",link:"https://khanacademy.org",icon:"https://cdn-icons-png.flaticon.com/512/906/906334.png"},
+    {name:"Coursera",link:"https://coursera.org",icon:"https://cdn-icons-png.flaticon.com/512/5968/5968913.png"}
+  ],
+  games:[
+    {name:"Poki",link:"https://poki.com",icon:"https://cdn-icons-png.flaticon.com/512/4341/4341025.png"},
+    {name:"CrazyGames",link:"https://www.crazygames.com",icon:"https://cdn-icons-png.flaticon.com/512/6422/6422215.png"},
+    {name:"Miniclip",link:"https://miniclip.com",icon:"https://cdn-icons-png.flaticon.com/512/4762/4762985.png"}
+  ],
+  news:[
+    {name:"BBC News",link:"https://bbc.com",icon:"https://cdn-icons-png.flaticon.com/512/5968/5968905.png"},
+    {name:"NDTV",link:"https://ndtv.com",icon:"https://cdn-icons-png.flaticon.com/512/3128/3128301.png"}
+  ],
+  tools:[
+    { name: "ChatGPT", link: "https://chatgpt.com", icon: "https://static.vecteezy.com/system/resources/previews/024/558/807/non_2x/openai-chatgpt-logo-icon-free-png.png" },
+    { name: "Gemini", link: "https://gemini.google.com", icon: "https://cdn-icons-png.flaticon.com/512/300/300221.png" },
+    { name: "Image BG Remover", link: "https://www.adobe.com/express/feature/image/remove-background", icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Adobe_Express_logo_CMYK_256px.svg/2101px-Adobe_Express_logo_CMYK_256px.svg.png" },
+    { name: "Photo Resize", link: "https://love-u-2.github.io/pic-resize", icon: "https://majhinaukri.in/tools/wp-content/uploads/2025/05/Logo_Image-Resizer.webp" },
+    { name: "Text to Voice", link: "https://dgw24.github.io/ttv", icon: "https://www.nicepng.com/png/detail/942-9428398_text-to-speech-text-to-speech-icon.png" },
+    { name: "Stylish QR", link: "https://love-u-2.github.io/qr", icon: "https://i.postimg.cc/jqM6z6S5/Bhabatosh-Qr.png" },
+    { name: "Image Upscaler", link: "https://www.aiseesoft.com/image-upscaler", icon: "https://sc.filehippo.net/images/t_app-icon-l/p/6b12452c-4620-4b53-b6e0-aff9733d6dd6/3393677176/ai-logo-maker-image-generator-logo" },
+    { name: "Doc Converter", link: "https://smallpdf.com", icon: "https://s.smallpdf.com/static/40d7d8365bc6e925.svg" },
+    { name: "Photo 2 URL", link: "https://postimages.org", icon: "https://postimgs.org/apple-touch-icon.png" },
+    { name: "Google Translater", link: "https://translate.google.com", icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/2048px-Google_Translate_logo.svg.png" }
+    
+  ]
+};
+
+/* ---------- Initial DOM references ---------- */
+const sidebar = document.getElementById('sidebar');
+const portalGrid = document.getElementById('portalGrid');
+const portalTitle = document.getElementById('portalTitle');
+const popularGrid = document.getElementById('popularGrid');
+const pageTitle = document.getElementById('pageTitle');
+const statusInfo = document.getElementById('statusInfo');
+const resultCount = document.getElementById('resultCount');
+const globalSearch = document.getElementById('globalSearch');
+const clearSearch = document.getElementById('clearSearch');
+
+/* ---------- Utility: render cards ---------- */
+function renderCards(list, container){
+  container.innerHTML = list.map(item => `
+    <div class="portal-card" role="button" onclick="window.open('${item.link}','_blank')">
+      <img src="${item.icon}" alt="${item.name}">
+      <a href="${item.link}" target="_blank" rel="noreferrer">${item.name}</a>
+    </div>
+  `).join('');
+}
+
+/* ---------- Show popular (home) ---------- */
+function loadPopular(){
+  const pop = [
+    ...data.social.slice(0,4),
+    ...data.govt.slice(0,2),
+    ...data.tools.slice(0,1)
+  ];
+  // renderCards(pop, popularGrid); // Removed popularGrid reference as it's missing in HTML
+}
+loadPopular();
+
+/* ---------- Category selection ---------- */
+let currentCategory = 'social';
+function selectCategory(cat, btn){
+  // set active button
+  document.querySelectorAll('.side-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  currentCategory = cat;
+  // show portal section
+  showSection('portal');
+  portalTitle.innerText = (document.activeElement && document.activeElement.innerText) || (cat.charAt(0).toUpperCase()+cat.slice(1));
+  pageTitle.innerText = portalTitle.innerText;
+  // render
+  const list = data[cat] || [];
+  renderCards(list, portalGrid);
+  resultCount.innerText = list.length;
+  // clear search
+  globalSearch.value = '';
+  statusInfo.innerText = `Showing ${list.length} items`;
+}
+
+/* ---------- Sections (home/about/contact/portal) ---------- */
+function showSection(id){
+  document.querySelectorAll('.main section').forEach(s=>s.classList.remove('active'));
+  if(id==='portal') document.getElementById('portalSection').classList.add('active');
+  else if(id==='home') document.getElementById('homeSection').classList.add('active');
+  else if(id==='about') document.getElementById('aboutSection').classList.add('active');
+  else if(id==='contact') document.getElementById('contactSection').classList.add('active');
+  // update title
+  const mapping = {home:'Home', about:'About', contact:'Contact', portal:'Portal'};
+  pageTitle.innerText = mapping[id] || mapping['home'];
+}
+
+/* ---------- Global Search (across all categories) ---------- */
+globalSearch.addEventListener('input', (e)=>{
+  const q = e.target.value.trim().toLowerCase();
+
+  if(!q){
+    // Restore default (home or previous section)
+    showSection('home');
+    statusInfo.innerText = "Ready";
+    return;
+  }
+
+  // combine all categories into single array
+  let allItems = [];
+  for (let cat in data) {
+    if (Array.isArray(data[cat])) {
+      allItems = allItems.concat(data[cat].map(item => ({
+        ...item,
+        category: cat
+      })));
+    }
+  }
+
+  // filter by query
+  const filtered = allItems.filter(it => it.name.toLowerCase().includes(q));
+
+  // render result in portal grid
+  renderCards(filtered, portalGrid);
+  resultCount.innerText = filtered.length;
+
+  // show in portal section
+  showSection('portal');
+  pageTitle.innerText = `Search results for "${q}"`;
+  portalTitle.innerText = `🔍 Results (${filtered.length})`;
+  statusInfo.innerText = `Found ${filtered.length} matches across ${Object.keys(data).length} categories`;
+});
+
+clearSearch.addEventListener('click', ()=>{ globalSearch.value=''; globalSearch.dispatchEvent(new Event('input')); });
+
+/* ---------- Theme Toggle (Dark / Light Mode) [FIXED LOGIC] ---------- */
+const themeToggle = document.getElementById('themeToggle');
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    // Apply Dark Theme
+    document.body.classList.add('dark');
+    themeToggle.textContent = '☀️'; // Sun icon means current theme is Dark, click to switch to Light
+  } else {
+    // Apply Light Theme
+    document.body.classList.remove('dark');
+    themeToggle.textContent = '🌙'; // Moon icon means current theme is Light, click to switch to Dark
+  }
+  // Clear any leftover 'light' class from previous code versions
+  document.body.classList.remove('light'); 
+  localStorage.setItem('digi_theme', theme);
+}
+
+themeToggle.addEventListener('click', () => {
+  // Check if body CURRENTLY has 'dark' class
+  const isDark = document.body.classList.contains('dark');
+  // If it is dark, switch to light. If it is light, switch to dark.
+  applyTheme(isDark ? 'light' : 'dark');
+});
+
+// 🌞 Default = LIGHT MODE
+const savedTheme = localStorage.getItem('digi_theme') || 'light';
+applyTheme(savedTheme);
+
+
+/* ---------- Mobile menu (hamburger) ---------- */
+const hambBtn = document.getElementById('hambBtn');
+hambBtn.addEventListener('click', ()=>{
+  sidebar.classList.toggle('hide');
+});
+window.addEventListener('resize', ()=>{
+  if(window.innerWidth>880) sidebar.classList.remove('hide');
+});
+
+// 💬 Chat Popup Functionality (Working as intended)
+const chatToggle=document.getElementById("chatToggle");
+const chatBox=document.getElementById("chatBox");
+const closeChat=document.getElementById("closeChat");
+const chatSend=document.getElementById("chatSend");
+const chatInput=document.getElementById("chatInput");
+const chatMessages=document.getElementById("chatMessages");
+
+chatToggle.onclick=()=>{chatBox.style.display="flex";chatToggle.style.display="none";}
+closeChat.onclick=()=>{chatBox.style.display="none";chatToggle.style.display="flex";}
+chatSend.onclick=sendMsg;
+chatInput.addEventListener("keypress",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMsg();}});
+
+function sendMsg(){
+  const msg=chatInput.value.trim();
+  if(!msg)return;
+  const user=document.createElement("div");
+  user.className="user-msg";
+  user.textContent=msg;
+  chatMessages.appendChild(user);
+  chatInput.value="";
+  setTimeout(()=>{
+    const bot=document.createElement("div");
+    bot.className="bot-msg";
+    bot.textContent=autoReply(msg);
+    chatMessages.appendChild(bot);
+    chatMessages.scrollTop=chatMessages.scrollHeight;
+  },600);
+}
+
+let chatContext = [];
+
+function autoReply(userText){
+  userText = userText.toLowerCase();
+  chatContext.push(userText);
+
+  const greetings = ["Hey!", "Hi there!", "Hello 👋"];
+  const random = arr => arr[Math.floor(Math.random()*arr.length)];
+
+  // basic AI-like interpretation
+  if(userText.includes("how are you")) return random(["I'm doing great! 😊","Feeling awesome!","All systems running fine!"]);
+  if(userText.match(/your name|who are you/)) return "I'm Digi Assistant 🤖 — your personal web helper.";
+  if(userText.match(/(thank|thanks)/)) return random(["You're welcome!","No problem 😄","Glad to help!"]);
+  if(userText.match(/(what can you do|help)/)) return "I can open sites, search globally, switch themes, show developer info & chat with you anytime.";
+  if(userText.match(/(time|date)/)){
+    let now = new Date();
+    return `It's ${now.toLocaleTimeString()} on ${now.toLocaleDateString()}.`;
+  }
+
+  // simple memory (recall last topic)
+  if(userText.includes("again") && chatContext.length>1)
+    return "You just asked me about '" + chatContext[chatContext.length-2] + "' 😄";
+
+  // fallback smart guess
+  if(userText.includes("?")) return "Hmm 🤔 let me think... I'm not sure yet, but I'm learning every day!";
+  return random(["Interesting... tell me more.","Okay, noted!","I'm listening 👂","Let's talk more about that."]);
+}
+
+
+/* ---------- Contact form ---------- */
+function sendContact(){
+  const name = document.getElementById('cname').value.trim();
+  const email = document.getElementById('cemail').value.trim();
+  const msg = document.getElementById('cmsg').value.trim();
+  if(!name || !email) return alert('Name and Email required');
+  alert('ধন্যবাদ — আপনার বার্তা পাঠানো হয়েছে। (This is a demo; you can wire this to an API.)');
+  document.getElementById('contactForm').reset();
+}
+
+/* ---------- Open favorites example ---------- */
+function openAllFavorites(){
+  // Open first two items of current category as example
+  const list = data[currentCategory] || [];
+  if(list.length===0) return alert('No favorites in this category');
+  for(let i=0;i<Math.min(3,list.length);i++){
+    window.open(list[i].link,'_blank');
+  }
+}
+
+/* ---------- Helpers ---------- */
+function escapeHtml(s){ return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+/* ---------- Init: load initial portal ---------- */
+selectCategory('social', document.querySelector('.side-btn')); // selects and renders
+showSection('home'); // home should be front
+resultCount.innerText = data.social.length;
+statusInfo.innerText = 'Ready';
+</script>
+</body>
+</html>
