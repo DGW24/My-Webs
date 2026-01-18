@@ -88,9 +88,10 @@ html, body {
 .nav-links{display:flex;gap:14px;align-items:center}
 .nav-links a{color:var(--muted);text-decoration:none;font-weight:600}
 .nav-links a:hover{color:var(--text);text-shadow:0 0 8px rgba(0,0,0,0.2)}
+.nav-btn{width:100%;text-align:left;padding:10px 12px;border-radius:10px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-weight:600;display:flex;align-items:center;gap:10px}
 
 /* SEARCH & TOGGLES */
-.search-wrap{display:flex;align-items:center;gap:8px;background:var(--card-bg);padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.04)}
+.search-wrap{display:flex;align-items:center;gap:8px;background:var(--card-bg);padding:6px 8px;border-radius:10px;border:1px solid rgba(63, 63, 63, 0.247)}
 .search-wrap input{background:transparent;border:none;outline:none;color:var(--text);min-width:180px;padding:6px}
 .icon-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;padding:8px;border-radius:8px}
 .icon-btn:hover{background:rgba(255,255,255,0.03);color:var(--text)}
@@ -445,6 +446,7 @@ button:focus,input:focus,textarea:focus{outline:2px solid rgba(99,102,241,0.12);
         <a href="#" onclick="showSection('home')">Home</a>
         <a href="#" onclick="showSection('about')">About</a>
         <a href="#" onclick="showSection('contact')">Contact</a>
+        <button class="nav-btn" onclick="selectCategory('agent',this)">🖥️ Agent</button>
       </div>
 
       <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">🌙</button>
@@ -461,12 +463,14 @@ button:focus,input:focus,textarea:focus{outline:2px solid rgba(99,102,241,0.12);
       <button class="side-btn" onclick="selectCategory('tools',this)">⚙️ Tools</button>
       <button class="side-btn" onclick="selectCategory('aeps',this)">💳 AEPS</button>
       <button class="side-btn" onclick="selectCategory('education',this)">🎓 Education</button>
+      <button class="side-btn" onclick="selectCategory('recharge',this)">💡 Recharges & Bills</button>
       <button class="side-btn" onclick="selectCategory('games',this)">🎮 Games</button>
       <button class="side-btn" onclick="selectCategory('news',this)">📰 News</button>
       
 
-      <hr style="width:100%;border:none;border-top:1px solid rgba(255,255,255,0.03);margin:10px 0">
 
+      <hr style="width:100%;border:none;border-top:1px solid rgba(255,255,255,0.03);margin:10px 0">
+      
       <div style="margin-top:auto;font-size:12px;color:var(--muted)">© 2025 Digi World</div>
     </div>
 
@@ -688,7 +692,24 @@ const data = {
     { name: "Photo 2 URL", link: "https://postimages.org", icon: "https://postimgs.org/apple-touch-icon.png" },
     { name: "Google Translater", link: "https://translate.google.com", icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/2048px-Google_Translate_logo.svg.png" }
     
-  ]
+  ],
+  agent: [
+  {name: "Lakshmir Bhandar Portal", link: "https://dglb26.github.io/LB26/", icon: "https://socialsecurity.wb.gov.in/images/biswo.webp"},
+  {name: "Old Age Pension",    link: "# Coming Soon",    icon: "https://static.vecteezy.com/system/resources/previews/044/801/567/non_2x/pension-icon-elderly-with-money-bag-icon-related-to-elderly-solid-icon-style-old-age-element-illustration-vector.jpg"},
+  {name: "My Tool App",    link: "# comeing soon",    icon: "https://cdn-icons-png.flaticon.com/512/1055/1055687.png"}
+  ],
+
+recharge:[
+  {name:"Paytm",link:"https://paytm.com/recharge",icon:"https://assetscdn1.paytm.com/images/catalog/view_item/2832559/1725599834382.png"},
+  {name:"Amazon Pay",link:"https://www.amazon.in/amazonpay/home",icon:"https://pngimg.com/uploads/amazon/amazon_PNG5.png"},
+  {name:"Freecharge",link:"https://www.freecharge.in",icon:"https://pbs.twimg.com/profile_images/1537681015094665216/aXsmB9Op_400x400.jpg"},
+  {name:"Mobikwik",link:"https://www.mobikwik.com",icon:"https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/mobikwik-logo-icon.png"},
+  {name:"PhonePe",link:"https://www.phonepe.com/recharge/",icon:"https://static.vecteezy.com/system/resources/previews/049/116/753/non_2x/phonepe-app-icon-transparent-background-free-png.png"},
+  {name:"Google Pay",link:"https://pay.google.com",icon:"https://1000logos.net/wp-content/uploads/2016/11/New-Google-Logo.jpg"},
+  {name:"Bharat BillPay",link:"https://www.bharatbillpay.com",icon:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTM03SeaEpj3CO-NRDGg_s1Dej-w58Rkt-X3g&s"},
+],
+
+
 };
 
 /* ---------- Initial DOM references ---------- */
